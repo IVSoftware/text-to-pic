@@ -9,9 +9,10 @@ namespace text_to_pic
 {
     public partial class MainForm : Form
     {
-        public MainForm()
+        public MainForm() => InitializeComponent();
+        protected override void OnLoad(EventArgs e)
         {
-            InitializeComponent();
+            base.OnLoad(e);
             var folder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images");
             // Make an array of the image file names so you can search it.
             _images = 
@@ -20,7 +21,7 @@ namespace text_to_pic
                 .ToArray();
             textBoxSearch.TextChanged += ontextBoxSearchChanged;
         }
-        private readonly string[] _images;
+        private string[] _images;
 
         private void ontextBoxSearchChanged(object sender, EventArgs e)
         {
@@ -34,21 +35,24 @@ namespace text_to_pic
                 }
                 else
                 {
+                    // Use Linq to detect matches
                     matches = 
-                    _images
-                    .Where(_ => 
-                        Path.GetFileNameWithoutExtension(_)
-                        .Contains(textBoxSearch.Text)
-                    ).ToArray();
+                        _images
+                        .Where(_ => 
+                            Path.GetFileNameWithoutExtension(_)
+                            .Contains(textBoxSearch.Text)
+                        ).ToArray();
                 }
                 labelMatchCount.Text = $"{matches.Length} matches";
                 if(matches.Length.Equals(1))
                 {
+                    // Found a single matches
                     labelMatchCount.Visible = false;
                     pictureBox.Image = Image.FromFile(matches.First());
                 }
                 else
                 {
+                    // Found multiple match
                     pictureBox.Image = null;
                     labelMatchCount.Visible = true;
                 }
